@@ -5,706 +5,242 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Roadmap Builder</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Cabinet+Grotesk:wght@400;500;700;800&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Sora:wght@600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
-/* ─── RESET & ROOT ─────────────────────────────────────────────────────── */
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f0eff5;
+  --surface:#ffffff;
+  --border:#e8e6f0;
+  --border2:#d4d0e8;
+  --text:#1a1830;
+  --text2:#6b6880;
+  --text3:#a8a5be;
+  --topbar-h:54px;
+  --sidebar-w:272px;
+  --accent:#6c5ce7;
+  --accent-bg:#f0eeff;
+  --accent-border:#c9bff5;
+  --accent-text:#4c3db8;
+  --violet:#6c5ce7; --violet-bg:#f0eeff; --violet-bdr:#c9bff5;
+  --sky:#0ea5e9;    --sky-bg:#e0f5fe;    --sky-bdr:#bae7fd;
+  --emerald:#00a86b;--emerald-bg:#e6faf3;--emerald-bdr:#a7f3d0;
+  --amber:#d97706;  --amber-bg:#fef3c7;  --amber-bdr:#fde68a;
+  --coral:#e5503a;  --coral-bg:#fee2db;  --coral-bdr:#fca68f;
+  --pink:#db2777;   --pink-bg:#fce7f3;   --pink-bdr:#f9a8d4;
+  --teal:#0d9488;   --teal-bg:#ccfbf1;   --teal-bdr:#99f6e4;
+  --slate:#64748b;  --slate-bg:#f1f5f9;  --slate-bdr:#cbd5e1;
+  --font-head:'Sora',sans-serif;
+  --font-body:'Inter',sans-serif;
+  --r-sm:6px; --r:10px; --r-lg:14px; --r-xl:20px;
+  --shadow:0 2px 12px rgba(108,92,231,0.07),0 1px 3px rgba(0,0,0,0.05);
+  --shadow-lg:0 8px 32px rgba(108,92,231,0.12),0 2px 8px rgba(0,0,0,0.08);
+  --t:0.15s ease;
+}
+html{font-size:14px}
+body{font-family:var(--font-body);background:var(--bg);color:var(--text);height:100vh;overflow:hidden;line-height:1.5;-webkit-font-smoothing:antialiased}
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:4px}
+::-webkit-scrollbar-thumb:hover{background:var(--text3)}
 
-:root {
-  --bg:            #0f0e17;
-  --bg2:           #14131f;
-  --bg3:           #1c1a2e;
-  --surface:       #1e1c30;
-  --surface2:      #252338;
-  --surface3:      #2d2b42;
-  --glass:         rgba(255,255,255,0.04);
-  --glass-border:  rgba(255,255,255,0.08);
+.app{display:grid;grid-template-columns:var(--sidebar-w) 1fr;grid-template-rows:var(--topbar-h) 1fr;height:100vh;overflow:hidden}
 
-  --text:          #f0eeff;
-  --text2:         #9d98c2;
-  --text3:         #5c5880;
+/* TOPBAR */
+.topbar{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;background:var(--surface);border-bottom:1px solid var(--border);z-index:50;padding-right:20px}
+.topbar-brand{width:var(--sidebar-w);flex-shrink:0;display:flex;align-items:center;gap:10px;padding:0 20px;border-right:1px solid var(--border);height:100%}
+.brand-icon{width:30px;height:30px;background:var(--accent-bg);border:1.5px solid var(--accent-border);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.brand-icon svg{width:15px;height:15px;stroke:var(--accent);fill:none;stroke-width:2.2}
+.brand-name{font-family:var(--font-head);font-size:14px;font-weight:700;color:var(--text);letter-spacing:-0.3px}
+.brand-name span{color:var(--accent)}
+.topbar-center{flex:1;display:flex;align-items:center;padding:0 20px}
+.title-wrap{display:flex;align-items:center;gap:7px;border:1px solid var(--border);border-radius:var(--r-sm);padding:5px 10px;background:var(--bg);transition:border-color var(--t)}
+.title-wrap:focus-within{border-color:var(--accent-border);background:var(--surface)}
+.title-wrap svg{width:12px;height:12px;stroke:var(--text3);fill:none;stroke-width:2;flex-shrink:0}
+#canvas-title-input{background:transparent;border:none;outline:none;color:var(--text);font-family:var(--font-body);font-size:13px;font-weight:600;width:230px}
+.topbar-actions{display:flex;align-items:center;gap:8px}
 
-  --accent:        #7c6af7;
-  --accent2:       #a99dff;
-  --accent-glow:   rgba(124,106,247,0.25);
-  --accent-bg:     rgba(124,106,247,0.12);
-  --accent-border: rgba(124,106,247,0.3);
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:5px;border:none;border-radius:var(--r-sm);padding:6px 13px;font-family:var(--font-body);font-size:12px;font-weight:500;cursor:pointer;transition:all var(--t);white-space:nowrap;line-height:1}
+.btn:active{transform:scale(0.97)}
+.btn svg{width:12px;height:12px;flex-shrink:0}
+.btn-ghost{background:transparent;color:var(--text2);border:1px solid var(--border)}
+.btn-ghost:hover{background:var(--bg);color:var(--text);border-color:var(--border2)}
+.btn-primary{background:var(--accent);color:#fff;border:1px solid transparent;font-weight:600}
+.btn-primary:hover{background:#5a4bd4;transform:translateY(-1px);box-shadow:0 4px 14px rgba(108,92,231,0.3)}
+.btn-export{background:var(--accent);color:#fff;border:1px solid transparent;font-weight:600}
+.btn-export:hover{background:#5a4bd4;transform:translateY(-1px);box-shadow:0 4px 14px rgba(108,92,231,0.3)}
+.btn-export:disabled{opacity:0.6;cursor:not-allowed;transform:none;box-shadow:none}
+.btn-clear{background:transparent;color:#e5503a;border:1px solid #fca68f}
+.btn-clear:hover{background:#fee2db;border-color:#e5503a}
+.btn-sm{padding:4px 9px;font-size:11px}
+.btn-xs{padding:3px 7px;font-size:11px;border-radius:5px}
+.btn-icon{width:26px;height:26px;padding:0;justify-content:center;border-radius:6px}
+.btn-danger{background:transparent;color:#e5503a;border:1px solid #fca68f}
+.btn-danger:hover{background:#fee2db;border-color:#e5503a}
 
-  /* phase palette */
-  --c-violet:  #7c6af7; --c-violet-bg: rgba(124,106,247,0.12); --c-violet-border: rgba(124,106,247,0.3);
-  --c-sky:     #38bdf8; --c-sky-bg:    rgba(56,189,248,0.1);  --c-sky-border:    rgba(56,189,248,0.25);
-  --c-emerald: #34d399; --c-emerald-bg:rgba(52,211,153,0.1); --c-emerald-border:rgba(52,211,153,0.25);
-  --c-amber:   #fbbf24; --c-amber-bg:  rgba(251,191,36,0.1);  --c-amber-border:  rgba(251,191,36,0.25);
-  --c-coral:   #f87171; --c-coral-bg:  rgba(248,113,113,0.1); --c-coral-border:  rgba(248,113,113,0.25);
-  --c-pink:    #f472b6; --c-pink-bg:   rgba(244,114,182,0.1); --c-pink-border:   rgba(244,114,182,0.25);
-  --c-teal:    #2dd4bf; --c-teal-bg:   rgba(45,212,191,0.1);  --c-teal-border:   rgba(45,212,191,0.25);
-  --c-slate:   #94a3b8; --c-slate-bg:  rgba(148,163,184,0.1); --c-slate-border:  rgba(148,163,184,0.25);
+/* SIDEBAR */
+.sidebar{background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden}
+.sidebar-scroll{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:16px}
+.sidebar-section{display:flex;flex-direction:column;gap:7px}
+.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1px}
+.section-label{font-size:10px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--text3)}
+.phase-chip{display:flex;align-items:center;gap:8px;padding:7px 8px;border-radius:var(--r);border:1px solid transparent;cursor:pointer;transition:all var(--t);position:relative}
+.phase-chip::before{content:'';position:absolute;left:0;top:20%;bottom:20%;width:3px;background:var(--chip-color,var(--accent));border-radius:0 3px 3px 0;opacity:0;transition:opacity var(--t)}
+.phase-chip:hover{background:var(--bg);border-color:var(--border)}
+.phase-chip:hover::before{opacity:1}
+.phase-chip.active{background:var(--accent-bg);border-color:var(--accent-border)}
+.phase-chip.active::before{opacity:1}
+.chip-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.chip-label{flex:1;font-size:12px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text2)}
+.phase-chip.active .chip-label{color:var(--text)}
+.chip-actions{display:flex;gap:2px;opacity:0;transition:opacity var(--t)}
+.phase-chip:hover .chip-actions{opacity:1}
+.tips-box{font-size:11px;color:var(--text3);line-height:1.9;background:var(--bg);border:1px solid var(--border);border-radius:var(--r);padding:10px 11px}
 
-  --border:    rgba(255,255,255,0.07);
-  --border2:   rgba(255,255,255,0.12);
+/* EDITOR PANEL */
+.editor-panel{flex-shrink:0;border-top:1px solid var(--border);background:var(--surface);display:none;flex-direction:column;max-height:54vh;overflow:hidden}
+.editor-panel.open{display:flex}
+.editor-header{display:flex;align-items:center;gap:8px;padding:11px 14px 0;flex-shrink:0}
+.editor-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.editor-title{font-size:11px;font-weight:600;color:var(--text2);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.editor-close{width:18px;height:18px;border-radius:4px;background:transparent;border:1px solid var(--border);color:var(--text3);cursor:pointer;font-size:10px;display:flex;align-items:center;justify-content:center;transition:all var(--t);line-height:1}
+.editor-close:hover{background:var(--bg);color:var(--text)}
+.editor-tabs{display:flex;padding:9px 14px 0;flex-shrink:0;border-bottom:1px solid var(--border)}
+.editor-tab{padding:5px 11px;font-size:12px;font-weight:500;color:var(--text3);cursor:pointer;border:none;background:transparent;font-family:var(--font-body);border-bottom:2px solid transparent;margin-bottom:-1px;transition:all var(--t)}
+.editor-tab:hover{color:var(--text2)}
+.editor-tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+.editor-body{flex:1;overflow-y:auto;padding:12px 14px}
+.field{display:flex;flex-direction:column;gap:4px;margin-bottom:9px}
+.field-label{font-size:11px;font-weight:500;color:var(--text3)}
+.field-input,.field-textarea{background:var(--bg);border:1px solid var(--border);border-radius:var(--r-sm);padding:6px 9px;color:var(--text);font-family:var(--font-body);font-size:12px;outline:none;transition:border-color var(--t);width:100%}
+.field-input:focus,.field-textarea:focus{border-color:var(--accent-border);background:var(--surface);box-shadow:0 0 0 3px rgba(108,92,231,0.08)}
+.field-textarea{resize:vertical;min-height:50px;line-height:1.5}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.palette{display:flex;flex-wrap:wrap;gap:5px}
+.palette-dot{width:20px;height:20px;border-radius:50%;cursor:pointer;transition:all var(--t);border:2px solid transparent}
+.palette-dot:hover{transform:scale(1.18)}
+.palette-dot.active{border-color:var(--surface);box-shadow:0 0 0 2.5px var(--dot-color)}
+.group-card{background:var(--bg);border:1px solid var(--border);border-radius:var(--r);padding:9px;margin-bottom:7px}
+.group-card-header{display:flex;align-items:center;gap:6px;margin-bottom:7px}
+.group-color-bar{width:3px;height:18px;border-radius:2px;flex-shrink:0}
+.group-name-input{flex:1;background:transparent;border:none;outline:none;color:var(--text);font-size:12px;font-weight:600;font-family:var(--font-body)}
+.group-icon-input{width:34px;text-align:center;background:var(--surface);border:1px solid var(--border);border-radius:5px;padding:3px;font-size:11px;color:var(--text);outline:none;font-family:var(--font-body)}
+.feature-row{display:flex;align-items:center;gap:6px;padding:4px 0;border-bottom:1px solid var(--border)}
+.feature-row:last-child{border-bottom:none}
+.status-btn{width:17px;height:17px;border-radius:50%;flex-shrink:0;border:1.5px solid;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;transition:all var(--t);background:transparent;font-family:var(--font-body);line-height:1}
+.s-planned{border-color:var(--border2);color:var(--text3)}
+.s-progress{border-color:var(--accent);color:var(--accent);background:var(--accent-bg)}
+.s-done{border-color:var(--emerald);color:var(--emerald);background:var(--emerald-bg)}
+.feature-text-input{flex:1;background:transparent;border:none;outline:none;color:var(--text2);font-size:12px;font-family:var(--font-body)}
+.feature-text-input:focus{color:var(--text)}
+.add-feature-row{width:100%;background:transparent;border:1px dashed var(--border2);border-radius:5px;padding:5px;font-size:11px;color:var(--text3);cursor:pointer;font-family:var(--font-body);margin-top:4px;transition:all var(--t)}
+.add-feature-row:hover{border-color:var(--accent-border);color:var(--accent);background:var(--accent-bg)}
+.add-group-btn{width:100%;background:transparent;border:1px dashed var(--border2);border-radius:var(--r);padding:8px;font-size:12px;color:var(--text3);cursor:pointer;font-family:var(--font-body);margin-top:3px;transition:all var(--t)}
+.add-group-btn:hover{border-color:var(--accent-border);color:var(--accent);background:var(--accent-bg)}
 
-  --radius-sm: 8px;
-  --radius:    12px;
-  --radius-lg: 18px;
-  --radius-xl: 24px;
+/* MAIN CANVAS */
+.main{display:flex;flex-direction:column;overflow:hidden;background:var(--bg);position:relative}
+.canvas-wrap{flex:1;overflow:auto;padding:32px 40px}
+.canvas-grid{display:flex;flex-direction:row;gap:0;align-items:flex-start;min-width:max-content}
 
-  --font-head: 'Cabinet Grotesk', sans-serif;
-  --font-body: 'Instrument Sans', sans-serif;
+/* CONNECTOR */
+.phase-connector{display:flex;align-items:flex-start;padding-top:74px;flex-shrink:0}
+.connector-track{display:flex;align-items:center;width:48px}
+.connector-line{height:2px;flex:1;background:var(--border2)}
+.connector-node{width:14px;height:14px;border-radius:50%;flex-shrink:0}
 
-  --transition: 0.18s cubic-bezier(0.4, 0, 0.2, 1);
-  --transition-slow: 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+/* PHASE CARD — matches reference */
+.phase-card-wrap{position:relative;animation:cardIn 0.35s cubic-bezier(0.4,0,0.2,1) both}
+@keyframes cardIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.phase-card{width:370px;background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r-xl);padding:26px 28px;cursor:pointer;transition:box-shadow 0.2s ease,border-color 0.2s ease,transform 0.2s ease;position:relative;box-shadow:var(--shadow)}
+.phase-card:hover{box-shadow:var(--shadow-lg);transform:translateY(-2px);border-color:var(--border2)}
+.phase-card.selected{border-color:var(--accent-border);box-shadow:0 0 0 2px var(--accent-border),var(--shadow-lg)}
 
-  --sidebar-w: 290px;
-}
+/* Card period badge */
+.card-header-row{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px}
+.card-period-badge{display:inline-flex;align-items:center;padding:4px 11px;border-radius:20px;font-size:10px;font-weight:600;letter-spacing:0.07em;text-transform:uppercase}
+.card-icon-box{width:40px;height:40px;border:1.5px solid var(--border2);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0}
+/* Large serif title */
+.card-title{font-family:var(--font-head);font-size:23px;font-weight:700;letter-spacing:-0.4px;line-height:1.2;margin-bottom:10px}
+/* Focus line */
+.card-focus{display:flex;align-items:center;gap:7px;font-size:11px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:22px}
+.card-focus-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+/* Feature group — thick left border, matching reference */
+.feat-group{padding-left:18px;margin-bottom:22px}
+.feat-group:last-child{margin-bottom:0}
+.feat-group-header{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.feat-group-icon{font-size:16px;flex-shrink:0}
+.feat-group-name{font-family:var(--font-head);font-size:15px;font-weight:700;letter-spacing:-0.2px}
+.feat-item{display:flex;align-items:flex-start;gap:9px;padding:3px 0;font-size:13px;color:var(--text2);line-height:1.5}
+.feat-item svg{width:16px;height:16px;flex-shrink:0;margin-top:1px}
 
-html { font-size: 14px; }
-body {
-  font-family: var(--font-body);
-  background: var(--bg);
-  color: var(--text);
-  min-height: 100vh;
-  overflow: hidden;
-  line-height: 1.5;
-}
+/* EMPTY STATE */
+.empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:55vh;text-align:center;gap:16px;animation:fadeIn 0.4s ease}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.empty-icon{width:68px;height:68px;border-radius:18px;background:var(--accent-bg);border:1.5px solid var(--accent-border);display:flex;align-items:center;justify-content:center;font-size:28px}
+.empty-title{font-family:var(--font-head);font-size:21px;font-weight:700;color:var(--text);letter-spacing:-0.3px}
+.empty-sub{font-size:13px;color:var(--text3);max-width:270px;line-height:1.7}
 
-/* ─── SCROLLBARS ───────────────────────────────────────────────────────── */
-::-webkit-scrollbar { width: 4px; height: 4px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--surface3); border-radius: 4px; }
-::-webkit-scrollbar-thumb:hover { background: var(--text3); }
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(26,24,48,0.4);backdrop-filter:blur(6px);z-index:200;display:flex;align-items:center;justify-content:center;animation:fadeIn 0.2s ease}
+.modal{background:var(--surface);border:1px solid var(--border2);border-radius:var(--r-xl);padding:26px;width:400px;max-width:calc(100vw - 40px);max-height:calc(100vh - 60px);overflow-y:auto;box-shadow:0 24px 64px rgba(108,92,231,0.18)}
+.modal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.modal-title{font-family:var(--font-head);font-size:17px;font-weight:700;color:var(--text);letter-spacing:-0.3px}
+.modal-close{width:26px;height:26px;border-radius:6px;background:transparent;border:1px solid var(--border);color:var(--text3);cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;transition:all var(--t);line-height:1}
+.modal-close:hover{background:var(--bg);color:var(--text)}
+.modal-footer{display:flex;gap:8px;justify-content:flex-end;margin-top:20px;padding-top:16px;border-top:1px solid var(--border)}
 
-/* ─── LAYOUT ───────────────────────────────────────────────────────────── */
-.app {
-  display: grid;
-  grid-template-columns: var(--sidebar-w) 1fr;
-  grid-template-rows: 56px 1fr;
-  height: 100vh;
-  overflow: hidden;
-}
+/* TOAST */
+.toast-container{position:fixed;bottom:18px;right:18px;z-index:500;display:flex;flex-direction:column;gap:7px;pointer-events:none}
+.toast{background:var(--surface);border:1px solid var(--border2);border-radius:var(--r);padding:9px 14px;font-size:12px;color:var(--text);display:flex;align-items:center;gap:8px;box-shadow:0 4px 18px rgba(0,0,0,0.12);animation:toastIn 0.25s cubic-bezier(0.34,1.56,0.64,1);min-width:180px}
+@keyframes toastIn{from{opacity:0;transform:translateX(14px) scale(0.96)}to{opacity:1;transform:translateX(0) scale(1)}}
+.toast.success{border-left:3px solid #00a86b}
+.toast.error{border-left:3px solid #e5503a}
+.toast.info{border-left:3px solid var(--accent)}
 
-/* ─── TOPBAR ───────────────────────────────────────────────────────────── */
-.topbar {
-  grid-column: 1 / -1;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 20px 0 0;
-  background: var(--bg2);
-  border-bottom: 1px solid var(--border);
-  position: relative;
-  z-index: 50;
-}
-.topbar-brand {
-  width: var(--sidebar-w);
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 0 20px;
-  border-right: 1px solid var(--border);
-  height: 100%;
-}
-.brand-icon {
-  width: 30px; height: 30px;
-  background: var(--accent-bg);
-  border: 1px solid var(--accent-border);
-  border-radius: 8px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 15px;
-  flex-shrink: 0;
-}
-.brand-name {
-  font-family: var(--font-head);
-  font-size: 15px;
-  font-weight: 800;
-  color: var(--text);
-  letter-spacing: -0.3px;
-}
-.brand-name span {
-  color: var(--accent2);
-}
-.topbar-center {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 0 20px;
-}
-.title-input-wrap {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  background: var(--glass);
-  border: 1px solid var(--glass-border);
-  border-radius: var(--radius-sm);
-  padding: 5px 10px;
-  transition: border-color var(--transition);
-}
-.title-input-wrap:focus-within {
-  border-color: var(--accent-border);
-}
-.title-input-wrap svg { opacity: 0.4; flex-shrink: 0; }
-#canvas-title-input {
-  background: transparent;
-  border: none;
-  outline: none;
-  color: var(--text);
-  font-family: var(--font-head);
-  font-size: 14px;
-  font-weight: 700;
-  width: 240px;
-  letter-spacing: -0.2px;
-}
-.topbar-actions { display: flex; align-items: center; gap: 8px; }
+/* STATUS BAR */
+.statusbar{display:flex;align-items:center;gap:12px;padding:7px 20px;border-top:1px solid var(--border);background:var(--surface);font-size:11px;color:var(--text3);flex-shrink:0}
+.statusbar-dot{width:6px;height:6px;border-radius:50%;background:#00a86b}
 
-/* ─── BUTTONS ──────────────────────────────────────────────────────────── */
-.btn {
-  display: inline-flex; align-items: center; gap: 6px;
-  border: none; border-radius: var(--radius-sm);
-  padding: 7px 14px;
-  font-family: var(--font-body); font-size: 13px; font-weight: 500;
-  cursor: pointer; transition: all var(--transition);
-  white-space: nowrap; line-height: 1;
-}
-.btn:active { transform: scale(0.97); }
-.btn-ghost {
-  background: transparent;
-  color: var(--text2);
-  border: 1px solid var(--border);
-}
-.btn-ghost:hover { background: var(--glass); color: var(--text); border-color: var(--border2); }
-.btn-accent {
-  background: var(--accent);
-  color: #fff;
-  box-shadow: 0 4px 16px var(--accent-glow);
-}
-.btn-accent:hover { background: #8e7dff; box-shadow: 0 6px 24px var(--accent-glow); transform: translateY(-1px); }
-.btn-export {
-  background: linear-gradient(135deg, #7c6af7 0%, #a99dff 100%);
-  color: #fff;
-  box-shadow: 0 4px 20px rgba(124,106,247,0.35);
-  font-weight: 600;
-}
-.btn-export:hover { transform: translateY(-1px); box-shadow: 0 8px 28px rgba(124,106,247,0.45); }
-.btn-sm { padding: 5px 10px; font-size: 12px; }
-.btn-xs { padding: 3px 8px; font-size: 11px; border-radius: 6px; }
-.btn-icon { width: 28px; height: 28px; padding: 0; justify-content: center; border-radius: 7px; }
-.btn-danger-ghost { background: transparent; color: #f87171; border: 1px solid rgba(248,113,113,0.2); }
-.btn-danger-ghost:hover { background: rgba(248,113,113,0.08); border-color: rgba(248,113,113,0.35); }
-
-/* ─── SIDEBAR ──────────────────────────────────────────────────────────── */
-.sidebar {
-  background: var(--bg2);
-  border-right: 1px solid var(--border);
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  position: relative;
-}
-.sidebar-scroll {
-  flex: 1;
-  overflow-y: auto;
-  padding: 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-.sidebar-section { display: flex; flex-direction: column; gap: 8px; }
-.section-header {
-  display: flex; align-items: center; justify-content: space-between;
-  margin-bottom: 2px;
-}
-.section-label {
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--text3);
-}
-
-/* ─── PHASE CHIPS ──────────────────────────────────────────────────────── */
-.phase-chip {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 10px;
-  border-radius: var(--radius);
-  border: 1px solid transparent;
-  cursor: pointer;
-  transition: all var(--transition);
-  background: var(--glass);
-  position: relative;
-  overflow: hidden;
-}
-.phase-chip::before {
-  content: '';
-  position: absolute;
-  left: 0; top: 0; bottom: 0;
-  width: 3px;
-  background: var(--chip-color, var(--accent));
-  border-radius: 0 2px 2px 0;
-  opacity: 0;
-  transition: opacity var(--transition);
-}
-.phase-chip:hover { background: var(--surface2); border-color: var(--border); }
-.phase-chip:hover::before { opacity: 1; }
-.phase-chip.active { background: var(--accent-bg); border-color: var(--accent-border); }
-.phase-chip.active::before { opacity: 1; }
-.chip-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-.chip-label { flex: 1; font-size: 12px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--text2); }
-.phase-chip.active .chip-label { color: var(--text); }
-.chip-actions {
-  display: flex; gap: 2px; opacity: 0; transition: opacity var(--transition);
-}
-.phase-chip:hover .chip-actions { opacity: 1; }
-
-/* ─── EDITOR PANEL ─────────────────────────────────────────────────────── */
-.editor-panel {
-  flex-shrink: 0;
-  border-top: 1px solid var(--border);
-  background: var(--bg2);
-  display: none;
-  flex-direction: column;
-  max-height: 55vh;
-  overflow: hidden;
-}
-.editor-panel.open { display: flex; }
-.editor-header {
-  display: flex; align-items: center; gap: 8px;
-  padding: 12px 16px 0;
-  flex-shrink: 0;
-}
-.editor-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-.editor-title { font-size: 11px; font-weight: 600; color: var(--text2); flex: 1; }
-.editor-close {
-  width: 20px; height: 20px; border-radius: 5px;
-  background: var(--glass); border: none; color: var(--text3);
-  cursor: pointer; font-size: 11px; display: flex; align-items: center; justify-content: center;
-  transition: all var(--transition);
-}
-.editor-close:hover { background: var(--surface3); color: var(--text); }
-.editor-tabs {
-  display: flex; gap: 2px;
-  padding: 10px 16px 0;
-  flex-shrink: 0;
-  border-bottom: 1px solid var(--border);
-}
-.editor-tab {
-  padding: 6px 12px;
-  font-size: 12px; font-weight: 500;
-  color: var(--text3);
-  cursor: pointer;
-  border: none; background: transparent;
-  font-family: var(--font-body);
-  border-bottom: 2px solid transparent;
-  margin-bottom: -1px;
-  transition: all var(--transition);
-}
-.editor-tab:hover { color: var(--text2); }
-.editor-tab.active { color: var(--accent2); border-bottom-color: var(--accent); }
-.editor-body { flex: 1; overflow-y: auto; padding: 14px 16px; }
-
-/* ─── FORM ─────────────────────────────────────────────────────────────── */
-.field { display: flex; flex-direction: column; gap: 4px; margin-bottom: 10px; }
-.field-label { font-size: 11px; font-weight: 500; color: var(--text3); }
-.field-input, .field-textarea, .field-select {
-  background: var(--glass);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  padding: 7px 10px;
-  color: var(--text);
-  font-family: var(--font-body);
-  font-size: 12px;
-  outline: none;
-  transition: border-color var(--transition);
-  width: 100%;
-}
-.field-input:focus, .field-textarea:focus { border-color: var(--accent-border); background: var(--accent-bg); }
-.field-textarea { resize: vertical; min-height: 54px; line-height: 1.5; }
-.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-
-/* ─── COLOR PALETTE ─────────────────────────────────────────────────────── */
-.palette { display: flex; flex-wrap: wrap; gap: 5px; }
-.palette-dot {
-  width: 20px; height: 20px; border-radius: 50%;
-  cursor: pointer; transition: all var(--transition);
-  border: 2px solid transparent;
-  position: relative;
-}
-.palette-dot:hover { transform: scale(1.15); }
-.palette-dot.active { border-color: #fff; box-shadow: 0 0 0 1px var(--dot-color); }
-
-/* ─── GROUPS EDITOR ─────────────────────────────────────────────────────── */
-.group-card {
-  background: var(--glass);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 10px;
-  margin-bottom: 8px;
-}
-.group-card-header {
-  display: flex; align-items: center; gap: 6px; margin-bottom: 8px;
-}
-.group-color-bar { width: 3px; height: 18px; border-radius: 2px; flex-shrink: 0; }
-.group-name-input {
-  flex: 1;
-  background: transparent; border: none; outline: none;
-  color: var(--text); font-size: 12px; font-weight: 600;
-  font-family: var(--font-body);
-}
-.group-icon-input {
-  width: 36px; text-align: center;
-  background: var(--glass); border: 1px solid var(--border);
-  border-radius: 6px; padding: 3px; font-size: 12px;
-  color: var(--text); outline: none;
-}
-.feature-row {
-  display: flex; align-items: center; gap: 6px;
-  padding: 4px 0; border-bottom: 1px solid var(--border);
-}
-.feature-row:last-child { border-bottom: none; }
-.status-btn {
-  width: 18px; height: 18px; border-radius: 50%; flex-shrink: 0;
-  border: 1.5px solid; cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 9px; transition: all var(--transition);
-}
-.s-planned  { border-color: var(--text3); color: var(--text3); background: transparent; }
-.s-progress { border-color: var(--accent); color: var(--accent); background: var(--accent-bg); }
-.s-done     { border-color: var(--c-emerald); color: var(--c-emerald); background: var(--c-emerald-bg); }
-.feature-text-input {
-  flex: 1; background: transparent; border: none; outline: none;
-  color: var(--text2); font-size: 12px; font-family: var(--font-body);
-}
-.feature-text-input:focus { color: var(--text); }
-.add-feature-row {
-  width: 100%; background: transparent; border: 1px dashed var(--border);
-  border-radius: 6px; padding: 5px; font-size: 11px; color: var(--text3);
-  cursor: pointer; font-family: var(--font-body); margin-top: 4px;
-  transition: all var(--transition);
-}
-.add-feature-row:hover { border-color: var(--accent-border); color: var(--accent2); background: var(--accent-bg); }
-.add-group-btn {
-  width: 100%; background: var(--glass); border: 1px dashed var(--border);
-  border-radius: var(--radius); padding: 8px; font-size: 12px; color: var(--text3);
-  cursor: pointer; font-family: var(--font-body); margin-top: 4px;
-  transition: all var(--transition);
-}
-.add-group-btn:hover { border-color: var(--accent-border); color: var(--accent2); background: var(--accent-bg); }
-
-/* ─── MAIN CANVAS ──────────────────────────────────────────────────────── */
-.main {
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  background: var(--bg);
-  position: relative;
-}
-.canvas-bg {
-  position: absolute; inset: 0;
-  background-image: 
-    radial-gradient(ellipse 80% 60% at 20% 10%, rgba(124,106,247,0.06) 0%, transparent 60%),
-    radial-gradient(ellipse 60% 50% at 80% 80%, rgba(56,189,248,0.04) 0%, transparent 60%);
-  pointer-events: none;
-}
-.canvas-wrap {
-  flex: 1;
-  overflow: auto;
-  padding: 32px 40px;
-  position: relative;
-}
-.canvas-grid {
-  display: flex;
-  flex-direction: row;
-  gap: 0;
-  align-items: flex-start;
-  min-width: max-content;
-}
-
-/* ─── PHASE CONNECTOR ──────────────────────────────────────────────────── */
-.phase-connector {
-  display: flex;
-  align-items: flex-start;
-  padding-top: 68px;
-  flex-shrink: 0;
-  position: relative;
-}
-.connector-track {
-  display: flex;
-  align-items: center;
-  width: 48px;
-  position: relative;
-}
-.connector-line {
-  height: 1.5px;
-  flex: 1;
-  background: linear-gradient(90deg, var(--border2) 0%, var(--border) 100%);
-}
-.connector-node {
-  width: 10px; height: 10px; border-radius: 50%;
-  background: var(--accent);
-  box-shadow: 0 0 0 3px var(--bg), 0 0 0 5px var(--accent-border);
-  flex-shrink: 0;
-}
-
-/* ─── PHASE CARD ───────────────────────────────────────────────────────── */
-.phase-card-wrap {
-  position: relative;
-  animation: cardIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) both;
-}
-@keyframes cardIn {
-  from { opacity: 0; transform: translateY(16px) scale(0.97); }
-  to   { opacity: 1; transform: translateY(0) scale(1); }
-}
-.phase-card {
-  width: 310px;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-xl);
-  padding: 22px;
-  cursor: pointer;
-  transition: all var(--transition-slow);
-  position: relative;
-  overflow: hidden;
-}
-.phase-card::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 2px;
-  background: var(--card-accent, var(--accent));
-  opacity: 0.6;
-  transition: opacity var(--transition);
-}
-.phase-card:hover { border-color: var(--border2); transform: translateY(-2px); box-shadow: 0 12px 40px rgba(0,0,0,0.3), 0 0 0 1px var(--border2); }
-.phase-card:hover::before { opacity: 1; }
-.phase-card.selected { border-color: var(--card-accent-border, var(--accent-border)); box-shadow: 0 0 0 1px var(--card-accent-border, var(--accent-border)), 0 12px 40px rgba(0,0,0,0.3); }
-.phase-card.selected::before { opacity: 1; }
-.phase-card-noise {
-  position: absolute; inset: 0;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
-  pointer-events: none;
-  opacity: 0.4;
-}
-
-/* Card header */
-.card-top {
-  display: flex; align-items: flex-start; justify-content: space-between;
-  margin-bottom: 14px;
-}
-.card-period-badge {
-  display: inline-flex; align-items: center; gap: 5px;
-  padding: 4px 10px;
-  border-radius: 20px;
-  font-size: 10px; font-weight: 600; letter-spacing: 0.06em;
-  border: 1px solid;
-  background: var(--badge-bg);
-  color: var(--badge-color);
-  border-color: var(--badge-border);
-}
-.card-icon-wrap {
-  width: 36px; height: 36px;
-  border-radius: 10px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 18px;
-  background: var(--icon-bg);
-  border: 1px solid var(--icon-border);
-  flex-shrink: 0;
-}
-.card-title {
-  font-family: var(--font-head);
-  font-size: 18px; font-weight: 800;
-  color: var(--text);
-  letter-spacing: -0.4px;
-  line-height: 1.2;
-  margin-bottom: 5px;
-}
-.card-focus {
-  display: flex; align-items: center; gap: 6px;
-  font-size: 10px; font-weight: 600; letter-spacing: 0.07em;
-  color: var(--focus-color);
-  margin-bottom: 18px;
-}
-.card-focus-dot {
-  width: 7px; height: 7px; border-radius: 50%;
-  background: var(--focus-color);
-  box-shadow: 0 0 6px var(--focus-color);
-  flex-shrink: 0;
-  animation: pulse 2.5s ease-in-out infinite;
-}
-@keyframes pulse {
-  0%, 100% { box-shadow: 0 0 4px var(--focus-color); }
-  50% { box-shadow: 0 0 10px var(--focus-color), 0 0 20px var(--focus-color); }
-}
-.card-divider { height: 1px; background: var(--border); margin: 14px 0; }
-
-/* Feature groups */
-.feat-group { margin-bottom: 14px; }
-.feat-group:last-child { margin-bottom: 0; }
-.feat-group-header {
-  display: flex; align-items: center; gap: 7px;
-  margin-bottom: 7px;
-}
-.feat-group-bar {
-  width: 2.5px; height: 100%; min-height: 14px;
-  border-radius: 2px; flex-shrink: 0;
-}
-.feat-group-name { font-size: 13px; font-weight: 600; color: var(--text); }
-.feat-group-icon { font-size: 13px; }
-.feat-item {
-  display: flex; align-items: center; gap: 7px;
-  padding: 4px 0;
-  font-size: 12px; color: var(--text2);
-  line-height: 1.4;
-}
-.feat-item-dot {
-  width: 16px; height: 16px; border-radius: 50%; flex-shrink: 0;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 8px; font-weight: 700;
-}
-.fi-planned { background: var(--glass); border: 1px solid var(--border2); color: var(--text3); }
-.fi-progress { background: var(--accent-bg); border: 1px solid var(--accent-border); color: var(--accent2); }
-.fi-done    { background: var(--c-emerald-bg); border: 1px solid var(--c-emerald-border); color: var(--c-emerald); }
-
-/* ─── EMPTY STATE ──────────────────────────────────────────────────────── */
-.empty-state {
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  min-height: 50vh; text-align: center; gap: 16px;
-  animation: fadeIn 0.5s ease both;
-}
-@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-.empty-icon {
-  width: 72px; height: 72px; border-radius: 20px;
-  background: var(--accent-bg); border: 1px solid var(--accent-border);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 30px;
-  box-shadow: 0 0 40px var(--accent-glow);
-}
-.empty-title { font-family: var(--font-head); font-size: 20px; font-weight: 800; color: var(--text); letter-spacing: -0.3px; }
-.empty-sub { font-size: 13px; color: var(--text3); max-width: 280px; line-height: 1.6; }
-
-/* ─── MODAL ─────────────────────────────────────────────────────────────── */
-.modal-overlay {
-  position: fixed; inset: 0;
-  background: rgba(10,9,20,0.7);
-  backdrop-filter: blur(8px);
-  z-index: 200;
-  display: flex; align-items: center; justify-content: center;
-  animation: fadeIn 0.2s ease;
-}
-.modal {
-  background: var(--surface);
-  border: 1px solid var(--border2);
-  border-radius: var(--radius-xl);
-  padding: 28px;
-  width: 420px; max-width: calc(100vw - 40px);
-  max-height: calc(100vh - 80px);
-  overflow-y: auto;
-  box-shadow: 0 32px 80px rgba(0,0,0,0.5), 0 0 0 1px var(--border2);
-  animation: modalIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-@keyframes modalIn {
-  from { opacity: 0; transform: scale(0.92) translateY(10px); }
-  to   { opacity: 1; transform: scale(1) translateY(0); }
-}
-.modal-header {
-  display: flex; align-items: center; justify-content: space-between;
-  margin-bottom: 22px;
-}
-.modal-title { font-family: var(--font-head); font-size: 18px; font-weight: 800; color: var(--text); letter-spacing: -0.3px; }
-.modal-close {
-  width: 28px; height: 28px; border-radius: 7px;
-  background: var(--glass); border: 1px solid var(--border);
-  color: var(--text3); cursor: pointer; font-size: 14px;
-  display: flex; align-items: center; justify-content: center;
-  transition: all var(--transition);
-}
-.modal-close:hover { background: var(--surface3); color: var(--text); }
-.modal-footer { display: flex; gap: 8px; justify-content: flex-end; margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--border); }
-
-/* ─── TOAST ─────────────────────────────────────────────────────────────── */
-.toast-container { position: fixed; bottom: 20px; right: 20px; z-index: 500; display: flex; flex-direction: column; gap: 8px; }
-.toast {
-  background: var(--surface3);
-  border: 1px solid var(--border2);
-  border-radius: var(--radius);
-  padding: 10px 16px;
-  font-size: 13px; color: var(--text);
-  display: flex; align-items: center; gap: 8px;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.3);
-  animation: toastIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-  min-width: 200px;
-}
-@keyframes toastIn {
-  from { opacity: 0; transform: translateX(20px) scale(0.95); }
-  to   { opacity: 1; transform: translateX(0) scale(1); }
-}
-.toast-icon { font-size: 14px; }
-.toast.success { border-left: 3px solid var(--c-emerald); }
-.toast.error   { border-left: 3px solid var(--c-coral); }
-.toast.info    { border-left: 3px solid var(--accent2); }
-
-/* ─── STATUS BAR ─────────────────────────────────────────────────────────── */
-.statusbar {
-  display: flex; align-items: center; gap: 16px;
-  padding: 8px 20px;
-  border-top: 1px solid var(--border);
-  background: var(--bg2);
-  font-size: 11px; color: var(--text3);
-  flex-shrink: 0;
-}
-.statusbar-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--c-emerald); box-shadow: 0 0 6px var(--c-emerald); }
-
-/* ─── SECTION DIVIDER ───────────────────────────────────────────────────── */
-.sidebar-divider { height: 1px; background: var(--border); margin: 4px 0; }
-
-/* ─── EXPORT WRAP ───────────────────────────────────────────────────────── */
-#export-root { position: fixed; left: -9999px; top: 0; }
-
-/* ─── MISC ──────────────────────────────────────────────────────────────── */
-::selection { background: var(--accent-bg); color: var(--accent2); }
+#export-root{position:fixed;left:-9999px;top:0;z-index:-1}
+@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
 </style>
 </head>
 <body>
-
-<!-- Toast Container -->
 <div class="toast-container" id="toast-container"></div>
-<!-- Export Root -->
 <div id="export-root"></div>
-<!-- Phase Modal -->
+
+<!-- MODAL -->
 <div class="modal-overlay" id="phase-modal" style="display:none" onclick="if(event.target===this)closeModal()">
   <div class="modal">
     <div class="modal-header">
-      <div class="modal-title" id="modal-title-text">New phase</div>
+      <div class="modal-title">New phase</div>
       <button class="modal-close" onclick="closeModal()">✕</button>
     </div>
     <div class="field">
       <div class="field-label">Phase title</div>
-      <input class="field-input" id="m-title" placeholder="Phase 1: Core Evolution">
+      <input class="field-input" id="m-title" placeholder="e.g. Phase 1: Core Evolution">
     </div>
     <div class="field-row">
-      <div class="field">
-        <div class="field-label">Time period</div>
-        <input class="field-input" id="m-period" placeholder="Q2–Q3: May–Sep">
+      <div class="field"><div class="field-label">Time period</div>
+        <input class="field-input" id="m-period" placeholder="e.g. Q2–Q3: May–Sep">
       </div>
-      <div class="field">
-        <div class="field-label">Focus / version</div>
-        <input class="field-input" id="m-focus" placeholder="VERSION 7.0.0">
+      <div class="field"><div class="field-label">Focus / version</div>
+        <input class="field-input" id="m-focus" placeholder="e.g. v1.0.0">
       </div>
     </div>
-    <div class="field">
-      <div class="field-label">Icon (emoji)</div>
-      <input class="field-input" id="m-icon" maxlength="4" placeholder="📊" value="📊" style="width:80px">
+    <div class="field"><div class="field-label">Icon (emoji)</div>
+      <input class="field-input" id="m-icon" maxlength="4" value="📋" style="width:68px">
     </div>
-    <div class="field">
-      <div class="field-label">Phase color</div>
+    <div class="field"><div class="field-label">Phase color</div>
       <div class="palette" id="modal-palette"></div>
     </div>
     <div class="modal-footer">
       <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
-      <button class="btn btn-accent" onclick="submitPhase()">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      <button class="btn btn-primary" onclick="submitPhase()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
         Create phase
       </button>
     </div>
@@ -712,34 +248,33 @@ body {
 </div>
 
 <div class="app">
-  <!-- TOPBAR -->
   <div class="topbar">
     <div class="topbar-brand">
-      <div class="brand-icon">🗺</div>
+      <div class="brand-icon">
+        <svg viewBox="0 0 24 24"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg>
+      </div>
       <div class="brand-name">Roadmap<span>Builder</span></div>
     </div>
     <div class="topbar-center">
-      <div class="title-input-wrap">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+      <div class="title-wrap">
+        <svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4z"/></svg>
         <input id="canvas-title-input" oninput="updateTitle(this.value)" placeholder="Your Roadmap Title">
       </div>
     </div>
     <div class="topbar-actions">
-      <button class="btn btn-ghost btn-sm" onclick="clearAll()">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+      <button class="btn btn-clear btn-sm" onclick="clearAll()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg>
         Clear
       </button>
-      <button class="btn btn-export" onclick="exportPNG()">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      <button class="btn btn-export" id="export-btn" onclick="exportPNG()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
         Export PNG
       </button>
     </div>
   </div>
 
-  <!-- SIDEBAR -->
   <div class="sidebar">
     <div class="sidebar-scroll">
-      <!-- PHASES -->
       <div class="sidebar-section">
         <div class="section-header">
           <div class="section-label">Phases</div>
@@ -747,25 +282,21 @@ body {
         </div>
         <div id="phase-list"></div>
       </div>
-
-      <!-- QUICK GUIDE -->
       <div class="sidebar-section">
-        <div class="section-label">Quick tips</div>
-        <div style="font-size:11px;color:var(--text3);line-height:1.7;background:var(--glass);border:1px solid var(--border);border-radius:var(--radius);padding:10px;display:flex;flex-direction:column;gap:5px">
+        <div class="section-label" style="margin-bottom:5px">Quick tips</div>
+        <div class="tips-box">
           <div>🎯 Click a phase card to edit it</div>
           <div>↔️ Use ← → to reorder phases</div>
           <div>🎨 Pick colors in the Style tab</div>
-          <div>✓ Click status icons to cycle states</div>
+          <div>✓ Click status circles to cycle</div>
           <div>📸 Export saves a high-res PNG</div>
         </div>
       </div>
     </div>
-
-    <!-- EDITOR PANEL -->
     <div class="editor-panel" id="editor-panel">
       <div class="editor-header">
         <div class="editor-dot" id="editor-dot"></div>
-        <div class="editor-title" id="editor-title">Select a phase to edit</div>
+        <div class="editor-title" id="editor-title">Select a phase</div>
         <button class="editor-close" onclick="deselect()">✕</button>
       </div>
       <div class="editor-tabs">
@@ -777,9 +308,7 @@ body {
     </div>
   </div>
 
-  <!-- MAIN -->
   <div class="main">
-    <div class="canvas-bg"></div>
     <div class="canvas-wrap" id="canvas-wrap">
       <div class="canvas-grid" id="roadmap-canvas"></div>
     </div>
@@ -792,605 +321,425 @@ body {
 </div>
 
 <script>
-// ── PALETTE DATA ──────────────────────────────────────────────────────────
 const PALETTE = [
-  { name:'violet',  hex:'#7c6af7', bg:'rgba(124,106,247,0.12)', border:'rgba(124,106,247,0.3)' },
-  { name:'sky',     hex:'#38bdf8', bg:'rgba(56,189,248,0.1)',   border:'rgba(56,189,248,0.25)' },
-  { name:'emerald', hex:'#34d399', bg:'rgba(52,211,153,0.1)',   border:'rgba(52,211,153,0.25)' },
-  { name:'amber',   hex:'#fbbf24', bg:'rgba(251,191,36,0.1)',   border:'rgba(251,191,36,0.25)' },
-  { name:'coral',   hex:'#f87171', bg:'rgba(248,113,113,0.1)',  border:'rgba(248,113,113,0.25)' },
-  { name:'pink',    hex:'#f472b6', bg:'rgba(244,114,182,0.1)',  border:'rgba(244,114,182,0.25)' },
-  { name:'teal',    hex:'#2dd4bf', bg:'rgba(45,212,191,0.1)',   border:'rgba(45,212,191,0.25)' },
-  { name:'slate',   hex:'#94a3b8', bg:'rgba(148,163,184,0.1)',  border:'rgba(148,163,184,0.25)' },
+  {name:'violet', hex:'#6c5ce7', bg:'#f0eeff', bdr:'#c9bff5'},
+  {name:'sky',    hex:'#0ea5e9', bg:'#e0f5fe', bdr:'#bae7fd'},
+  {name:'emerald',hex:'#00a86b', bg:'#e6faf3', bdr:'#a7f3d0'},
+  {name:'amber',  hex:'#d97706', bg:'#fef3c7', bdr:'#fde68a'},
+  {name:'coral',  hex:'#e5503a', bg:'#fee2db', bdr:'#fca68f'},
+  {name:'pink',   hex:'#db2777', bg:'#fce7f3', bdr:'#f9a8d4'},
+  {name:'teal',   hex:'#0d9488', bg:'#ccfbf1', bdr:'#99f6e4'},
+  {name:'slate',  hex:'#64748b', bg:'#f1f5f9', bdr:'#cbd5e1'},
 ];
-const STATUS_ORDER  = ['planned','progress','done'];
-const STATUS_ICONS  = { planned:'○', progress:'◐', done:'✓' };
-const STATUS_CLASS  = { planned:'fi-planned', progress:'fi-progress', done:'fi-done' };
-const STATUS_SBTN   = { planned:'s-planned', progress:'s-progress', done:'s-done' };
+const STATUS_ORDER = ['planned','progress','done'];
+const STATUS_SBTN  = {planned:'s-planned', progress:'s-progress', done:'s-done'};
+const STATUS_LABEL = {planned:'○', progress:'◐', done:'✓'};
 
-// ── STATE ─────────────────────────────────────────────────────────────────
-let S = {
-  title: 'Product Roadmap 2025',
-  phases: [],
-  selected: null,
-  tab: 'info',
-  modalColor: 'violet',
-};
+/* Circle-check SVG icon matching reference design */
+function checkIcon(status, color){
+  const s = `stroke="${color}" fill="none" stroke-width="1.5"`;
+  const circle = `<circle cx="8" cy="8" r="7" ${s}/>`;
+  const check  = status === 'done'    ? `<polyline points="5,8.5 7,10.5 11,6" ${s} stroke-linecap="round" stroke-linejoin="round"/>` : '';
+  const clock  = status === 'progress'? `<path d="M8 5v3l2 2" ${s} stroke-linecap="round"/>` : '';
+  return `<svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">${circle}${check}${clock}</svg>`;
+}
+
+/* ── STATE ── */
+let S = {title:'Product Roadmap 2025', phases:[], selected:null, tab:'info', modalColor:'violet'};
 let idSeed = Date.now();
 const uid = () => 'id' + (idSeed++);
-const getColor = n => PALETTE.find(c=>c.name===n) || PALETTE[0];
-const getPhase = id => S.phases.find(p=>p.id===id);
-const esc = s => (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');
+const col  = n => PALETTE.find(c => c.name === n) || PALETTE[0];
+const phase= id=> S.phases.find(p => p.id === id);
+const esc  = s => String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
 
-// ── PERSIST ───────────────────────────────────────────────────────────────
-function save() {
-  try { localStorage.setItem('rmb_v3', JSON.stringify(S)); } catch(e){}
-}
-function load() {
-  try {
-    const d = localStorage.getItem('rmb_v3');
-    if (d) { S = JSON.parse(d); return true; }
-  } catch(e){}
-  return false;
-}
+/* title color: index 0 → black, others → phase color */
+const titleColor = (idx, colorName) => idx === 0 ? '#1a1830' : col(colorName).hex;
 
-// ── TOAST ─────────────────────────────────────────────────────────────────
-function toast(msg, type='info', icon='ℹ️') {
-  const c = document.getElementById('toast-container');
-  const t = document.createElement('div');
-  t.className = `toast ${type}`;
-  t.innerHTML = `<span class="toast-icon">${icon}</span>${msg}`;
+/* ── PERSIST ── */
+const save = () => { try{ localStorage.setItem('rmb6', JSON.stringify(S)); }catch(e){} };
+const load = () => { try{ const d=localStorage.getItem('rmb6'); if(d){S=JSON.parse(d);return true;} }catch(e){} return false; };
+
+/* ── TOAST ── */
+function toast(msg, type='info', icon='ℹ️'){
+  const c=document.getElementById('toast-container');
+  const t=document.createElement('div'); t.className=`toast ${type}`;
+  t.innerHTML=`<span>${icon}</span><span>${esc(msg)}</span>`;
   c.appendChild(t);
-  setTimeout(() => { t.style.opacity='0'; t.style.transform='translateX(20px)'; t.style.transition='all 0.3s'; setTimeout(()=>t.remove(),300); }, 2200);
+  setTimeout(()=>{ t.style.cssText+='opacity:0;transform:translateX(12px);transition:all 0.22s'; setTimeout(()=>t.remove(),240); }, 2600);
 }
 
-// ── MODAL ─────────────────────────────────────────────────────────────────
-function openModal() {
-  document.getElementById('modal-title-text').textContent = 'New phase';
-  document.getElementById('m-title').value = '';
-  document.getElementById('m-period').value = '';
-  document.getElementById('m-focus').value = '';
-  document.getElementById('m-icon').value = '📊';
-  S.modalColor = 'violet';
-  renderPalette('modal-palette', 'modalColor', null, null);
-  document.getElementById('phase-modal').style.display = 'flex';
-  setTimeout(()=>document.getElementById('m-title').focus(), 50);
+/* ── MODAL ── */
+function openModal(){
+  ['m-title','m-period','m-focus'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('m-icon').value='📋';
+  S.modalColor='violet';
+  rpal('modal-palette', ()=>S.modalColor, v=>{ S.modalColor=v; rpal('modal-palette',()=>S.modalColor,arguments.callee); });
+  document.getElementById('phase-modal').style.display='flex';
+  setTimeout(()=>document.getElementById('m-title').focus(),60);
 }
-function closeModal() {
-  document.getElementById('phase-modal').style.display = 'none';
-}
-function submitPhase() {
-  const t = document.getElementById('m-title').value.trim();
-  if (!t) { toast('Please enter a phase title','error','❌'); document.getElementById('m-title').focus(); return; }
-  const phase = {
-    id: uid(), title: t,
-    period: document.getElementById('m-period').value.trim() || 'Q1–Q2',
-    focus:  document.getElementById('m-focus').value.trim()  || 'VERSION 1.0',
-    icon:   document.getElementById('m-icon').value.trim()   || '📊',
-    color:  S.modalColor, iconColor: S.modalColor,
-    groups: []
+function closeModal(){ document.getElementById('phase-modal').style.display='none'; }
+function submitPhase(){
+  const t=document.getElementById('m-title').value.trim();
+  if(!t){ toast('Please enter a phase title','error','❌'); document.getElementById('m-title').focus(); return; }
+  const p={
+    id:uid(), title:t,
+    period:document.getElementById('m-period').value.trim()||'Q1–Q2',
+    focus: document.getElementById('m-focus').value.trim() ||'v1.0.0',
+    icon:  document.getElementById('m-icon').value.trim()  ||'📋',
+    color:S.modalColor, iconColor:S.modalColor, groups:[]
   };
-  S.phases.push(phase);
-  closeModal(); save(); renderAll();
-  selectPhase(phase.id);
+  S.phases.push(p); closeModal(); save(); renderAll(); selectPhase(p.id);
   toast('Phase created!','success','✅');
 }
 
-// ── PALETTE RENDER ────────────────────────────────────────────────────────
-function renderPalette(containerId, stateKey, phaseId, variant) {
-  const el = document.getElementById(containerId);
-  if (!el) return;
-  const phase = phaseId ? getPhase(phaseId) : null;
-  const current = phase
-    ? (variant === 'icon' ? (phase.iconColor || phase.color) : phase.color)
-    : S[stateKey] || 'violet';
-  el.innerHTML = '';
-  PALETTE.forEach(c => {
-    const d = document.createElement('div');
-    d.className = 'palette-dot' + (current === c.name ? ' active' : '');
-    d.style.cssText = `background:${c.hex}; --dot-color:${c.hex}`;
-    d.title = c.name;
-    d.onclick = () => {
-      if (phaseId) {
-        const p = getPhase(phaseId);
-        if (variant === 'icon') p.iconColor = c.name;
-        else p.color = c.name;
-        save(); renderAll();
-      } else {
-        S[stateKey] = c.name;
-      }
-      renderPalette(containerId, stateKey, phaseId, variant);
-    };
+/* ── PALETTE HELPER ── */
+function rpal(id, getCur, onPick){
+  const el=document.getElementById(id); if(!el) return;
+  const cur=getCur(); el.innerHTML='';
+  PALETTE.forEach(c=>{
+    const d=document.createElement('div');
+    d.className='palette-dot'+(cur===c.name?' active':'');
+    d.style.cssText=`background:${c.hex};--dot-color:${c.hex}`; d.title=c.name;
+    d.onclick=()=>onPick(c.name);
     el.appendChild(d);
   });
 }
 
-// ── SELECT / DESELECT ─────────────────────────────────────────────────────
-function selectPhase(id) {
-  S.selected = id;
-  document.querySelectorAll('.phase-chip').forEach(el => el.classList.toggle('active', el.dataset.id === id));
-  document.querySelectorAll('.phase-card').forEach(el => el.classList.toggle('selected', el.dataset.id === id));
-  const phase = getPhase(id);
-  if (!phase) return;
-  const col = getColor(phase.color);
-  const ep = document.getElementById('editor-panel');
-  ep.classList.add('open');
-  document.getElementById('editor-dot').style.background = col.hex;
-  document.getElementById('editor-title').textContent = phase.title.length > 28 ? phase.title.slice(0,28)+'…' : phase.title;
+/* ── SELECT / DESELECT ── */
+function selectPhase(id){
+  S.selected=id;
+  document.querySelectorAll('.phase-chip').forEach(el=>el.classList.toggle('active',el.dataset.id===id));
+  document.querySelectorAll('.phase-card').forEach(el=>el.classList.toggle('selected',el.dataset.id===id));
+  const p=phase(id); if(!p) return;
+  document.getElementById('editor-panel').classList.add('open');
+  document.getElementById('editor-dot').style.background=col(p.color).hex;
+  document.getElementById('editor-title').textContent=p.title.length>30?p.title.slice(0,30)+'…':p.title;
   switchTab(S.tab);
-  updateStatus();
 }
-function deselect() {
-  S.selected = null;
-  document.querySelectorAll('.phase-chip').forEach(el => el.classList.remove('active'));
-  document.querySelectorAll('.phase-card').forEach(el => el.classList.remove('selected'));
+function deselect(){
+  S.selected=null;
+  document.querySelectorAll('.phase-chip').forEach(el=>el.classList.remove('active'));
+  document.querySelectorAll('.phase-card').forEach(el=>el.classList.remove('selected'));
   document.getElementById('editor-panel').classList.remove('open');
 }
 
-// ── TABS ──────────────────────────────────────────────────────────────────
-function switchTab(tab) {
-  S.tab = tab;
-  ['info','groups','style'].forEach(t => {
-    document.getElementById('tab-btn-'+t).classList.toggle('active', t===tab);
-  });
-  const phase = getPhase(S.selected);
-  if (!phase) return;
-  const body = document.getElementById('editor-body');
-
-  if (tab === 'info') {
-    body.innerHTML = `
+/* ── TABS ── */
+function switchTab(tab){
+  S.tab=tab;
+  ['info','groups','style'].forEach(t=>document.getElementById('tab-btn-'+t).classList.toggle('active',t===tab));
+  const p=phase(S.selected); if(!p) return;
+  const body=document.getElementById('editor-body');
+  if(tab==='info'){
+    body.innerHTML=`
       <div class="field"><div class="field-label">Phase title</div>
-        <input class="field-input" value="${esc(phase.title)}" oninput="patchPhase('title',this.value)">
-      </div>
+        <input class="field-input" value="${esc(p.title)}" oninput="patchInfo('title',this.value)"></div>
       <div class="field-row">
         <div class="field"><div class="field-label">Time period</div>
-          <input class="field-input" value="${esc(phase.period)}" oninput="patchPhase('period',this.value)">
-        </div>
+          <input class="field-input" value="${esc(p.period)}" oninput="patchInfo('period',this.value)"></div>
         <div class="field"><div class="field-label">Focus / version</div>
-          <input class="field-input" value="${esc(phase.focus)}" oninput="patchPhase('focus',this.value)">
-        </div>
+          <input class="field-input" value="${esc(p.focus)}" oninput="patchInfo('focus',this.value)"></div>
       </div>
       <div class="field"><div class="field-label">Icon (emoji)</div>
-        <input class="field-input" maxlength="4" value="${esc(phase.icon||'')}" oninput="patchPhase('icon',this.value)" style="width:80px">
-      </div>
-    `;
-  } else if (tab === 'groups') {
-    renderGroupsTab(phase);
-  } else if (tab === 'style') {
-    body.innerHTML = `
-      <div class="field"><div class="field-label">Phase accent color</div>
-        <div class="palette" id="style-phase-pal"></div>
-      </div>
-      <div class="field" style="margin-top:10px"><div class="field-label">Icon background color</div>
-        <div class="palette" id="style-icon-pal"></div>
-      </div>
-    `;
-    renderPalette('style-phase-pal', null, S.selected, 'phase');
-    renderPalette('style-icon-pal', null, S.selected, 'icon');
+        <input class="field-input" maxlength="4" value="${esc(p.icon||'')}" oninput="patchInfo('icon',this.value)" style="width:68px"></div>`;
+  } else if(tab==='groups'){
+    renderGroupsTab(p);
+  } else {
+    body.innerHTML=`
+      <div class="field"><div class="field-label">Phase accent color</div><div class="palette" id="sty-p"></div></div>
+      <div class="field" style="margin-top:8px"><div class="field-label">Icon color</div><div class="palette" id="sty-i"></div></div>`;
+    rpal('sty-p', ()=>phase(S.selected)?.color||'violet', v=>{ const p=phase(S.selected);if(p){p.color=v;save();renderAll();switchTab('style');} });
+    rpal('sty-i', ()=>phase(S.selected)?.iconColor||phase(S.selected)?.color||'violet', v=>{ const p=phase(S.selected);if(p){p.iconColor=v;save();renderAll();switchTab('style');} });
   }
 }
 
-// ── GROUPS TAB ────────────────────────────────────────────────────────────
-function renderGroupsTab(phase) {
-  const body = document.getElementById('editor-body');
-  body.innerHTML = '';
-  (phase.groups || []).forEach((g, gi) => {
-    const gc = getColor(g.color || 'violet');
-    const card = document.createElement('div');
-    card.className = 'group-card';
-    card.dataset.gi = gi;
-    // header
-    const hdr = document.createElement('div');
-    hdr.className = 'group-card-header';
-    hdr.innerHTML = `<div class="group-color-bar" style="background:${gc.hex}"></div>
+/* ── DEBOUNCED INFO PATCH ── */
+let _pt=null;
+function patchInfo(key,val){
+  const p=phase(S.selected); if(!p) return;
+  p[key]=val;
+  if(key==='title'){ const et=document.getElementById('editor-title'); if(et) et.textContent=val.length>30?val.slice(0,30)+'…':val; }
+  clearTimeout(_pt);
+  _pt=setTimeout(()=>{ save(); renderCanvas(); renderSidebar(); updateStatus(); },250);
+}
+
+/* ── GROUPS TAB ── */
+function renderGroupsTab(p){
+  const body=document.getElementById('editor-body'); body.innerHTML='';
+  (p.groups||[]).forEach((g,gi)=>{
+    const gc=col(g.color||'violet');
+    const card=document.createElement('div'); card.className='group-card';
+    card.innerHTML=`<div class="group-card-header">
+      <div class="group-color-bar" style="background:${gc.hex}"></div>
       <input class="group-name-input" value="${esc(g.name)}" placeholder="Group name" oninput="patchGroup(${gi},'name',this.value)">
       <input class="group-icon-input" maxlength="4" value="${esc(g.icon||'')}" placeholder="🏷" oninput="patchGroup(${gi},'icon',this.value)">
-      <button class="btn btn-danger-ghost btn-icon btn-sm" onclick="removeGroup(${gi})">✕</button>`;
-    card.appendChild(hdr);
-    // mini palette
-    const pal = document.createElement('div');
-    pal.className = 'palette'; pal.style.marginBottom='8px'; pal.id=`gpal-${gi}`;
+      <button class="btn btn-danger btn-icon btn-sm" onclick="removeGroup(${gi})">✕</button>
+    </div>`;
+    const pal=document.createElement('div'); pal.className='palette'; pal.style.marginBottom='7px'; pal.id=`gpal-${gi}`;
     card.appendChild(pal);
-    // features
-    const feats = document.createElement('div');
-    feats.id = `gfeats-${gi}`;
-    card.appendChild(feats);
-    const addBtn = document.createElement('button');
-    addBtn.className = 'add-feature-row';
-    addBtn.textContent = '+ add feature';
-    addBtn.onclick = () => addFeature(gi);
-    card.appendChild(addBtn);
-    body.appendChild(card);
-    renderGroupPalette(gi, g.color || 'violet');
-    renderFeaturesInGroup(gi, g);
+    const feats=document.createElement('div'); feats.id=`gfeats-${gi}`; card.appendChild(feats);
+    const ab=document.createElement('button'); ab.className='add-feature-row'; ab.textContent='+ add feature'; ab.onclick=()=>addFeature(gi);
+    card.appendChild(ab); body.appendChild(card);
+    rpal(`gpal-${gi}`, ()=>phase(S.selected)?.groups[gi]?.color||'violet', v=>{ patchGroup(gi,'color',v); rpal(`gpal-${gi}`,()=>phase(S.selected)?.groups[gi]?.color||'violet',arguments.callee); });
+    renderFeats(gi, g);
   });
-  const addG = document.createElement('button');
-  addG.className = 'add-group-btn';
-  addG.textContent = '+ add feature group';
-  addG.onclick = addGroup;
-  body.appendChild(addG);
+  const ag=document.createElement('button'); ag.className='add-group-btn'; ag.textContent='+ add feature group'; ag.onclick=addGroup;
+  body.appendChild(ag);
 }
-
-function renderGroupPalette(gi, current) {
-  const el = document.getElementById(`gpal-${gi}`);
-  if (!el) return;
-  el.innerHTML = '';
-  PALETTE.forEach(c => {
-    const d = document.createElement('div');
-    d.className = 'palette-dot' + (current === c.name ? ' active' : '');
-    d.style.cssText = `background:${c.hex};width:16px;height:16px;--dot-color:${c.hex}`;
-    d.onclick = () => patchGroup(gi, 'color', c.name);
-    el.appendChild(d);
-  });
-}
-
-function renderFeaturesInGroup(gi, g) {
-  const el = document.getElementById(`gfeats-${gi}`);
-  if (!el) return;
-  el.innerHTML = '';
-  (g.features || []).forEach((f, fi) => {
-    const row = document.createElement('div');
-    row.className = 'feature-row';
-    row.innerHTML = `
-      <button class="status-btn ${STATUS_SBTN[f.status||'planned']}" onclick="cycleStatus(${gi},${fi})" title="Click to change status">${STATUS_ICONS[f.status||'planned']}</button>
-      <input class="feature-text-input" value="${esc(f.text)}" placeholder="Feature…" oninput="patchFeature(${gi},${fi},'text',this.value)">
-      <button class="btn btn-danger-ghost btn-icon btn-xs" onclick="removeFeature(${gi},${fi})">✕</button>
-    `;
+function renderFeats(gi, g){
+  const el=document.getElementById(`gfeats-${gi}`); if(!el) return;
+  el.innerHTML='';
+  (g.features||[]).forEach((f,fi)=>{
+    const sc=f.status||'planned';
+    const row=document.createElement('div'); row.className='feature-row';
+    row.innerHTML=`
+      <button class="status-btn ${STATUS_SBTN[sc]}" onclick="cycleStatus(${gi},${fi})" title="Cycle status">${STATUS_LABEL[sc]}</button>
+      <input class="feature-text-input" value="${esc(f.text)}" placeholder="Feature description…" oninput="patchFeat(${gi},${fi},'text',this.value)">
+      <button class="btn btn-danger btn-icon btn-xs" onclick="removeFeat(${gi},${fi})">✕</button>`;
     el.appendChild(row);
   });
 }
+function patchGroup(gi,k,v){ const p=phase(S.selected);if(!p)return; p.groups[gi][k]=v; save();renderCanvas();renderSidebar(); }
+function patchFeat(gi,fi,k,v){ const p=phase(S.selected);if(!p)return; p.groups[gi].features[fi][k]=v; save();renderCanvas(); }
+function addGroup(){ const p=phase(S.selected);if(!p)return; p.groups.push({id:uid(),name:'New Group',icon:'📌',color:'violet',features:[]}); save();renderCanvas();renderSidebar();renderGroupsTab(p); }
+function removeGroup(gi){ const p=phase(S.selected);if(!p)return; p.groups.splice(gi,1); save();renderCanvas();renderSidebar();renderGroupsTab(p); }
+function addFeature(gi){ const p=phase(S.selected);if(!p)return; if(!p.groups[gi].features)p.groups[gi].features=[]; p.groups[gi].features.push({id:uid(),text:'New feature',status:'planned'}); save();renderCanvas();renderFeats(gi,p.groups[gi]); }
+function removeFeat(gi,fi){ const p=phase(S.selected);if(!p)return; p.groups[gi].features.splice(fi,1); save();renderCanvas();renderFeats(gi,p.groups[gi]); }
+function cycleStatus(gi,fi){ const p=phase(S.selected);if(!p)return; const cur=p.groups[gi].features[fi].status||'planned'; p.groups[gi].features[fi].status=STATUS_ORDER[(STATUS_ORDER.indexOf(cur)+1)%3]; save();renderCanvas();renderFeats(gi,p.groups[gi]); }
 
-// ── PATCH HELPERS ─────────────────────────────────────────────────────────
-function patchPhase(key, val) {
-  const p = getPhase(S.selected); if (!p) return;
-  p[key] = val;
-  if (key==='title') document.getElementById('editor-title').textContent = val.length>28?val.slice(0,28)+'…':val;
-  save(); renderAll();
-}
-function patchGroup(gi, key, val) {
-  const p = getPhase(S.selected); if (!p) return;
-  p.groups[gi][key] = val;
-  save(); renderAll();
-  if (key==='color') { renderGroupPalette(gi, val); renderFeaturesInGroup(gi, p.groups[gi]); }
-}
-function patchFeature(gi, fi, key, val) {
-  const p = getPhase(S.selected); if (!p) return;
-  p.groups[gi].features[fi][key] = val;
-  save(); renderAll();
-}
-function addGroup() {
-  const p = getPhase(S.selected); if (!p) return;
-  p.groups.push({ id:uid(), name:'New group', icon:'📌', color:'violet', features:[] });
-  save(); renderAll(); renderGroupsTab(p);
-}
-function removeGroup(gi) {
-  const p = getPhase(S.selected); if (!p) return;
-  p.groups.splice(gi, 1); save(); renderAll(); renderGroupsTab(p);
-}
-function addFeature(gi) {
-  const p = getPhase(S.selected); if (!p) return;
-  if (!p.groups[gi].features) p.groups[gi].features = [];
-  p.groups[gi].features.push({ id:uid(), text:'New feature', status:'planned' });
-  save(); renderAll(); renderFeaturesInGroup(gi, p.groups[gi]);
-}
-function removeFeature(gi, fi) {
-  const p = getPhase(S.selected); if (!p) return;
-  p.groups[gi].features.splice(fi, 1); save(); renderAll(); renderFeaturesInGroup(gi, p.groups[gi]);
-}
-function cycleStatus(gi, fi) {
-  const p = getPhase(S.selected); if (!p) return;
-  const cur = p.groups[gi].features[fi].status || 'planned';
-  p.groups[gi].features[fi].status = STATUS_ORDER[(STATUS_ORDER.indexOf(cur)+1)%3];
-  save(); renderAll(); renderFeaturesInGroup(gi, p.groups[gi]);
+/* ── DELETE / MOVE ── */
+function deletePhase(id){ S.phases=S.phases.filter(p=>p.id!==id); if(S.selected===id){S.selected=null;document.getElementById('editor-panel').classList.remove('open');} save();renderAll();toast('Phase deleted','info','🗑'); }
+function movePhase(id,dir){ const i=S.phases.findIndex(p=>p.id===id),ni=i+dir; if(ni<0||ni>=S.phases.length)return; [S.phases[i],S.phases[ni]]=[S.phases[ni],S.phases[i]]; save();renderAll(); }
+
+/* ── CLEAR ALL — fully resets state ── */
+function clearAll(){
+  if(!S.phases||!S.phases.length){ toast('Nothing to clear','info','ℹ️'); return; }
+  if(!confirm('Clear all phases? This cannot be undone.')) return;
+  S = {title:'', phases:[], selected:null, tab:'info', modalColor:'violet'};
+  document.getElementById('canvas-title-input').value='';
+  document.getElementById('editor-panel').classList.remove('open');
+  try{ localStorage.removeItem('rmb6'); }catch(e){}
+  renderAll();
+  toast('Cleared','info','🧹');
 }
 
-// ── DELETE / MOVE PHASE ───────────────────────────────────────────────────
-function deletePhase(id) {
-  S.phases = S.phases.filter(p=>p.id!==id);
-  if (S.selected===id) { S.selected=null; document.getElementById('editor-panel').classList.remove('open'); }
-  save(); renderAll(); toast('Phase deleted','info','🗑');
-}
-function movePhase(id, dir) {
-  const idx = S.phases.findIndex(p=>p.id===id);
-  const ni = idx+dir;
-  if (ni<0||ni>=S.phases.length) return;
-  [S.phases[idx], S.phases[ni]] = [S.phases[ni], S.phases[idx]];
-  save(); renderAll();
+function updateTitle(v){ S.title=v; save(); updateStatus(); }
+function updateStatus(){
+  const n=S.phases?.length||0, f=S.phases?.reduce((a,p)=>a+(p.groups||[]).reduce((b,g)=>b+(g.features||[]).length,0),0)||0;
+  document.getElementById('status-text').textContent=`${n} phase${n!==1?'s':''} · ${f} feature${f!==1?'s':''}`;
 }
 
-// ── TITLE ─────────────────────────────────────────────────────────────────
-function updateTitle(v) {
-  S.title = v; save();
-  updateStatus();
-}
+/* ── RENDER ── */
+function renderAll(){ renderSidebar(); renderCanvas(); updateStatus(); }
 
-// ── STATUS BAR ────────────────────────────────────────────────────────────
-function updateStatus() {
-  const phases = S.phases.length;
-  const features = S.phases.reduce((a,p)=>a+(p.groups||[]).reduce((b,g)=>b+(g.features||[]).length,0),0);
-  document.getElementById('status-text').textContent =
-    `${phases} phase${phases!==1?'s':''} · ${features} feature${features!==1?'s':''}`;
-}
-
-// ── CLEAR ALL ─────────────────────────────────────────────────────────────
-function clearAll() {
-  if (!S.phases.length) return;
-  if (confirm('Clear all phases? This cannot be undone.')) {
-    S.phases=[]; S.selected=null;
-    document.getElementById('editor-panel').classList.remove('open');
-    save(); renderAll(); toast('Cleared','info','🧹');
+function renderSidebar(){
+  const list=document.getElementById('phase-list'); list.innerHTML='';
+  if(!S.phases?.length){
+    list.innerHTML='<div style="font-size:11px;color:var(--text3);text-align:center;padding:10px 0;line-height:1.7">No phases yet.<br><b style="color:var(--accent)">+ Add</b> to start.</div>'; return;
   }
-}
-
-// ── RENDER ────────────────────────────────────────────────────────────────
-function renderAll() {
-  renderSidebar();
-  renderCanvas();
-  updateStatus();
-}
-
-function renderSidebar() {
-  const list = document.getElementById('phase-list');
-  list.innerHTML = '';
-  if (!S.phases.length) {
-    list.innerHTML = '<div style="font-size:11px;color:var(--text3);text-align:center;padding:12px 0;line-height:1.6">No phases yet.<br>Click <b style="color:var(--accent2)">+ Add</b> to start.</div>';
-    return;
-  }
-  S.phases.forEach(p => {
-    const col = getColor(p.color);
-    const chip = document.createElement('div');
-    chip.className = 'phase-chip' + (p.id===S.selected?' active':'');
-    chip.dataset.id = p.id;
-    chip.style.setProperty('--chip-color', col.hex);
-    chip.innerHTML = `
-      <div class="chip-dot" style="background:${col.hex}"></div>
+  S.phases.forEach(p=>{
+    const c=col(p.color);
+    const chip=document.createElement('div'); chip.className='phase-chip'+(p.id===S.selected?' active':''); chip.dataset.id=p.id;
+    chip.style.setProperty('--chip-color',c.hex);
+    chip.innerHTML=`<div class="chip-dot" style="background:${c.hex}"></div>
       <div class="chip-label">${esc(p.title)}</div>
       <div class="chip-actions">
         <button class="btn btn-ghost btn-icon btn-xs" onclick="event.stopPropagation();movePhase('${p.id}',-1)" title="Move left">←</button>
         <button class="btn btn-ghost btn-icon btn-xs" onclick="event.stopPropagation();movePhase('${p.id}',1)" title="Move right">→</button>
-        <button class="btn btn-danger-ghost btn-icon btn-xs" onclick="event.stopPropagation();deletePhase('${p.id}')">✕</button>
+        <button class="btn btn-danger btn-icon btn-xs" onclick="event.stopPropagation();deletePhase('${p.id}')">✕</button>
       </div>`;
-    chip.onclick = () => selectPhase(p.id);
+    chip.onclick=()=>selectPhase(p.id);
     list.appendChild(chip);
   });
 }
 
-function renderCanvas() {
-  const canvas = document.getElementById('roadmap-canvas');
-  canvas.innerHTML = '';
-  if (!S.phases.length) {
-    canvas.innerHTML = `<div class="empty-state">
-      <div class="empty-icon">🗺</div>
-      <div class="empty-title">Start your roadmap</div>
-      <div class="empty-sub">Add phases from the sidebar. Each phase becomes a card on your visual roadmap.</div>
-      <button class="btn btn-accent" onclick="openModal()">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+function renderCanvas(){
+  const canvas=document.getElementById('roadmap-canvas'); canvas.innerHTML='';
+  if(!S.phases?.length){
+    canvas.innerHTML=`<div class="empty-state">
+      <div class="empty-icon">🗺️</div>
+      <div class="empty-title">Build your roadmap</div>
+      <div class="empty-sub">Click <strong>+ Add</strong> in the sidebar to create your first phase card.</div>
+      <button class="btn btn-primary" onclick="openModal()" style="margin-top:6px">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:12px;height:12px"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
         Add first phase
-      </button>
-    </div>`;
-    return;
+      </button></div>`; return;
   }
-  S.phases.forEach((p, i) => {
-    if (i > 0) canvas.appendChild(buildConnector());
-    canvas.appendChild(buildCard(p));
+  S.phases.forEach((p,i)=>{
+    if(i>0) canvas.appendChild(buildConnector(p.color));
+    canvas.appendChild(buildCard(p,i));
   });
 }
 
-function buildConnector() {
-  const wrap = document.createElement('div');
-  wrap.className = 'phase-connector';
-  wrap.innerHTML = `<div class="connector-track"><div class="connector-line"></div><div class="connector-node"></div></div>`;
-  return wrap;
+function buildConnector(colorName){
+  const c=col(colorName);
+  const w=document.createElement('div'); w.className='phase-connector';
+  w.innerHTML=`<div class="connector-track">
+    <div class="connector-line"></div>
+    <div class="connector-node" style="background:${c.hex};box-shadow:0 0 0 3px var(--bg),0 0 0 5.5px ${c.bdr}"></div>
+  </div>`;
+  return w;
 }
 
-function buildCard(p) {
-  const col = getColor(p.color);
-  const icol = getColor(p.iconColor || p.color);
-  const wrap = document.createElement('div');
-  wrap.className = 'phase-card-wrap';
+function buildCard(p, idx){
+  const c=col(p.color), ic=col(p.iconColor||p.color);
+  const tc=titleColor(idx, p.color);
+  const wrap=document.createElement('div'); wrap.className='phase-card-wrap';
+  const card=document.createElement('div');
+  card.className='phase-card'+(p.id===S.selected?' selected':''); card.dataset.id=p.id;
 
-  const card = document.createElement('div');
-  card.className = 'phase-card' + (p.id===S.selected?' selected':'');
-  card.dataset.id = p.id;
-  card.style.setProperty('--card-accent', col.hex);
-  card.style.setProperty('--card-accent-border', col.border);
-
-  // groups html
-  let groupsHTML = '';
-  if (p.groups && p.groups.length) {
-    p.groups.forEach(g => {
-      const gc = getColor(g.color || 'violet');
-      let featsHTML = '';
-      (g.features || []).forEach(f => {
-        const sc = f.status || 'planned';
-        featsHTML += `<div class="feat-item">
-          <div class="feat-item-dot ${STATUS_CLASS[sc]}">${STATUS_ICONS[sc]}</div>
-          <span>${esc(f.text)}</span>
-        </div>`;
-      });
-      groupsHTML += `<div class="feat-group">
+  let groupsHTML='';
+  if(p.groups?.length){
+    p.groups.forEach(g=>{
+      const gc=col(g.color||'violet');
+      const feats=(g.features||[]).map(f=>{
+        const sc=f.status||'planned';
+        return `<div class="feat-item">${checkIcon(sc,gc.hex)}<span>${esc(f.text)}</span></div>`;
+      }).join('') || `<div class="feat-item" style="color:var(--text3);font-style:italic;font-size:12px">No features yet — click to add</div>`;
+      groupsHTML+=`<div class="feat-group" style="border-left:3px solid ${gc.hex}">
         <div class="feat-group-header">
-          <div class="feat-group-bar" style="background:${gc.hex}"></div>
           <span class="feat-group-icon">${esc(g.icon||'')}</span>
           <span class="feat-group-name" style="color:${gc.hex}">${esc(g.name)}</span>
-        </div>
-        ${featsHTML || `<div class="feat-item"><span style="color:var(--text3);font-size:11px;font-style:italic">No features — click to add</span></div>`}
+        </div>${feats}
       </div>`;
     });
   } else {
-    groupsHTML = `<div style="font-size:12px;color:var(--text3);font-style:italic;padding:8px 0">No groups yet — select this card and add some</div>`;
+    groupsHTML=`<div style="font-size:12px;color:var(--text3);font-style:italic;padding:4px 0">Select this card and add groups in the Groups tab.</div>`;
   }
 
-  card.innerHTML = `
-    <div class="phase-card-noise"></div>
-    <div class="card-top">
-      <div class="card-period-badge" style="--badge-bg:${col.bg};--badge-color:${col.hex};--badge-border:${col.border}">
-        ${esc(p.period || '')}
-      </div>
-      <div class="card-icon-wrap" style="--icon-bg:${icol.bg};--icon-border:${icol.border}">
-        ${esc(p.icon || '📊')}
-      </div>
+  card.innerHTML=`
+    <div class="card-header-row">
+      <div class="card-period-badge" style="background:${c.bg};color:${c.hex}">${esc(p.period||'')}</div>
+      <div class="card-icon-box" style="border-color:${ic.bdr};background:${ic.bg}">${esc(p.icon||'📋')}</div>
     </div>
-    <div class="card-title">${esc(p.title)}</div>
-    <div class="card-focus" style="--focus-color:${col.hex}">
-      <div class="card-focus-dot"></div>
-      FOCUS: ${esc(p.focus || '')}
+    <div class="card-title" style="color:${tc}">${esc(p.title)}</div>
+    <div class="card-focus" style="color:${c.hex}">
+      <div class="card-focus-dot" style="background:${c.hex}"></div>
+      FOCUS: ${esc(p.focus||'')}
     </div>
-    <div class="card-divider"></div>
-    ${groupsHTML}
-  `;
-  card.onclick = () => selectPhase(p.id);
-  wrap.appendChild(card);
-  return wrap;
+    ${groupsHTML}`;
+  card.onclick=()=>selectPhase(p.id);
+  wrap.appendChild(card); return wrap;
 }
 
-// ── EXPORT PNG ────────────────────────────────────────────────────────────
-async function exportPNG() {
-  const btn = document.querySelector('.btn-export');
-  const origHtml = btn.innerHTML;
-  btn.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="animation:spin 1s linear infinite"><path d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z" stroke-opacity="0.25"/><path d="M21 12a9 9 0 0 0-9-9"/></svg> Exporting…`;
-  btn.disabled = true;
-
-  try {
-    const canvas = document.getElementById('roadmap-canvas');
-    const exportWrap = document.createElement('div');
-    exportWrap.style.cssText = `
-      font-family:'Instrument Sans',sans-serif;
-      background:#0f0e17;
-      padding:48px 56px;
-      display:inline-flex;
-      flex-direction:column;
-      gap:28px;
-      min-width:${canvas.scrollWidth + 112}px;
-    `;
-
-    // header
-    const hdr = document.createElement('div');
-    hdr.style.cssText = 'display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,0.07);padding-bottom:20px';
-    hdr.innerHTML = `
-      <div style="font-family:'Cabinet Grotesk',sans-serif;font-size:28px;font-weight:800;color:#f0eeff;letter-spacing:-0.5px">${esc(S.title)}</div>
-      <div style="font-size:12px;color:#5c5880">Generated ${new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'})}</div>
-    `;
-    exportWrap.appendChild(hdr);
-
-    // clone canvas
-    const cloned = canvas.cloneNode(true);
-    cloned.style.minWidth = 'max-content';
-    cloned.querySelectorAll('.phase-card-noise').forEach(el=>el.remove());
-    exportWrap.appendChild(cloned);
-
-    // footer
-    const ftr = document.createElement('div');
-    ftr.style.cssText = 'font-size:11px;color:#5c5880;text-align:right;border-top:1px solid rgba(255,255,255,0.07);padding-top:16px';
-    ftr.textContent = 'Built with Roadmap Builder';
-    exportWrap.appendChild(ftr);
-
-    const root = document.getElementById('export-root');
-    root.innerHTML = '';
-    root.appendChild(exportWrap);
-    await new Promise(r=>setTimeout(r, 120));
-
-    const c = await html2canvas(exportWrap, {
-      scale: 2, useCORS: true, logging: false,
-      backgroundColor: '#0f0e17',
-      width: exportWrap.scrollWidth,
-      height: exportWrap.scrollHeight,
-      windowWidth: exportWrap.scrollWidth + 200,
+/* ── EXPORT PNG — inline-styles only, no external fonts ── */
+async function exportPNG(){
+  if(!S.phases?.length){ toast('Add phases before exporting','error','❌'); return; }
+  const btn=document.getElementById('export-btn'), orig=btn.innerHTML;
+  btn.innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px;animation:spin 0.9s linear infinite"><path d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z" stroke-opacity="0.3"/><path d="M21 12a9 9 0 0 0-9-9"/></svg> Exporting…`;
+  btn.disabled=true;
+  try{
+    const root=document.getElementById('export-root'); root.innerHTML='';
+    const wrap=document.createElement('div');
+    wrap.style.cssText='font-family:system-ui,-apple-system,sans-serif;background:#f0eff5;padding:48px 56px;display:inline-flex;flex-direction:column;gap:32px;min-width:max-content';
+    const hdr=document.createElement('div');
+    hdr.style.cssText='display:flex;align-items:center;justify-content:space-between;border-bottom:1.5px solid #e8e6f0;padding-bottom:20px;margin-bottom:4px';
+    hdr.innerHTML=`<div style="font-size:26px;font-weight:700;color:#1a1830;letter-spacing:-0.4px">${esc(S.title||'Roadmap')}</div>
+      <div style="font-size:11px;color:#a8a5be">${new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'})}</div>`;
+    wrap.appendChild(hdr);
+    const row=document.createElement('div'); row.style.cssText='display:flex;flex-direction:row;align-items:flex-start;gap:0';
+    S.phases.forEach((p,i)=>{
+      if(i>0){
+        const c=col(p.color), conn=document.createElement('div');
+        conn.style.cssText='display:flex;align-items:flex-start;padding-top:74px;flex-shrink:0';
+        conn.innerHTML=`<div style="display:flex;align-items:center;width:48px">
+          <div style="height:2px;flex:1;background:#d4d0e8"></div>
+          <div style="width:14px;height:14px;border-radius:50%;background:${c.hex};box-shadow:0 0 0 3px #f0eff5,0 0 0 5.5px ${c.bdr};flex-shrink:0"></div>
+        </div>`;
+        row.appendChild(conn);
+      }
+      row.appendChild(buildExportCard(p,i));
     });
-    root.innerHTML = '';
-
-    c.toBlob(blob => {
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = (S.title || 'roadmap').replace(/\s+/g,'_') + '.png';
-      a.click();
-      URL.revokeObjectURL(url);
-      toast('Exported successfully!','success','📸');
-    }, 'image/png');
-  } catch(e) {
-    toast('Export failed: '+e.message,'error','❌');
-    console.error(e);
-  } finally {
-    btn.innerHTML = origHtml; btn.disabled = false;
-  }
+    wrap.appendChild(row);
+    const ftr=document.createElement('div');
+    ftr.style.cssText='font-size:11px;color:#a8a5be;text-align:right;border-top:1px solid #e8e6f0;padding-top:14px';
+    ftr.textContent='Built with Roadmap Builder';
+    wrap.appendChild(ftr);
+    root.appendChild(wrap);
+    await new Promise(r=>setTimeout(r,180));
+    const cv=await html2canvas(wrap,{scale:2.5,useCORS:false,allowTaint:true,logging:false,backgroundColor:'#f0eff5',width:wrap.scrollWidth,height:wrap.scrollHeight,windowWidth:wrap.scrollWidth+200});
+    root.innerHTML='';
+    cv.toBlob(blob=>{
+      const url=URL.createObjectURL(blob), a=document.createElement('a');
+      a.href=url; a.download=(S.title||'roadmap').replace(/[^a-zA-Z0-9\-_]/g,'_')+'.png';
+      document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
+      toast('Exported!','success','📸');
+    },'image/png');
+  }catch(e){ console.error(e); toast('Export failed: '+e.message,'error','❌'); }
+  finally{ btn.innerHTML=orig; btn.disabled=false; }
 }
 
-// ── SEED DATA ─────────────────────────────────────────────────────────────
-function seed() {
-  S.title = 'Product Roadmap 2025';
-  S.phases = [
-    {
-      id:uid(), title:'Phase 1: Experience & Core Evolution',
-      period:'Q2–Q3: May – Sep', focus:'VERSION 7.0.0', icon:'📊', color:'violet', iconColor:'violet',
-      groups:[
-        { id:uid(), name:'Finance Enhancements', icon:'🏦', color:'emerald', features:[
-          {id:uid(),text:'New Bank Reconciliation Module',status:'done'},
-          {id:uid(),text:'Customer/Vendor Offset Management',status:'done'},
-        ]},
-        { id:uid(), name:'HCMS Upgrades', icon:'👥', color:'violet', features:[
-          {id:uid(),text:'Improved employee self-service',status:'progress'},
-          {id:uid(),text:'Enhanced re-hiring & System Audit Trail',status:'done'},
-        ]},
-        { id:uid(), name:'Mobile Experience', icon:'📱', color:'sky', features:[
-          {id:uid(),text:'Redesigned salary slips & vacation dashboards',status:'planned'},
-        ]},
-      ]
-    },
-    {
-      id:uid(), title:'Phase 2: Intelligence & Innovation',
-      period:'Q3–Q4: Oct – Dec', focus:'VERSION 7.5.0', icon:'🚀', color:'sky', iconColor:'sky',
-      groups:[
-        { id:uid(), name:'New Bid Management', icon:'📋', color:'violet', features:[
-          {id:uid(),text:'End-to-end tender management system',status:'planned'},
-          {id:uid(),text:'Automated bidding workflows',status:'planned'},
-        ]},
-        { id:uid(), name:'Strengthened BI', icon:'📈', color:'emerald', features:[
-          {id:uid(),text:'Advanced interactive dashboards',status:'planned'},
-          {id:uid(),text:'Enhanced Query Builder tools',status:'planned'},
-        ]},
-        { id:uid(), name:'System Customization', icon:'🎨', color:'coral', features:[
-          {id:uid(),text:'Universal design engine (themes, fonts)',status:'planned'},
-        ]},
-      ]
-    },
-    {
-      id:uid(), title:'Phase 3: Scale & Ecosystem',
-      period:'Q1 2026: Jan – Mar', focus:'VERSION 8.0.0', icon:'🌐', color:'teal', iconColor:'teal',
-      groups:[
-        { id:uid(), name:'API Platform', icon:'⚡', color:'amber', features:[
-          {id:uid(),text:'Public REST API with full docs',status:'planned'},
-          {id:uid(),text:'Webhook & event system',status:'planned'},
-        ]},
-        { id:uid(), name:'Integrations', icon:'🔗', color:'teal', features:[
-          {id:uid(),text:'Slack, Teams & Notion connectors',status:'planned'},
-        ]},
-      ]
-    }
+function buildExportCard(p, idx){
+  const c=col(p.color), ic=col(p.iconColor||p.color), tc=titleColor(idx,p.color);
+  const card=document.createElement('div');
+  card.style.cssText='width:370px;background:#fff;border:1.5px solid #e8e6f0;border-radius:20px;padding:26px 28px;position:relative;overflow:hidden;font-family:system-ui,-apple-system,sans-serif;box-shadow:0 2px 12px rgba(108,92,231,0.07)';
+  const bar=document.createElement('div'); bar.style.cssText=`position:absolute;top:0;left:0;right:0;height:3px;background:${c.hex}`; card.appendChild(bar);
+  const hrow=document.createElement('div'); hrow.style.cssText='display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px';
+  hrow.innerHTML=`<div style="display:inline-flex;padding:4px 11px;border-radius:20px;font-size:10px;font-weight:600;letter-spacing:0.07em;text-transform:uppercase;background:${c.bg};color:${c.hex}">${esc(p.period||'')}</div>
+    <div style="width:40px;height:40px;border:1.5px solid ${ic.bdr};border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:19px;background:${ic.bg}">${esc(p.icon||'📋')}</div>`;
+  card.appendChild(hrow);
+  const title=document.createElement('div'); title.style.cssText=`font-size:23px;font-weight:700;color:${tc};letter-spacing:-0.4px;line-height:1.2;margin-bottom:10px`; title.textContent=p.title||''; card.appendChild(title);
+  const focus=document.createElement('div'); focus.style.cssText=`display:flex;align-items:center;gap:7px;font-size:11px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:${c.hex};margin-bottom:22px`;
+  focus.innerHTML=`<div style="width:8px;height:8px;border-radius:50%;background:${c.hex};flex-shrink:0"></div>FOCUS: ${esc(p.focus||'')}`; card.appendChild(focus);
+  (p.groups||[]).forEach(g=>{
+    const gc=col(g.color||'violet');
+    const grp=document.createElement('div'); grp.style.cssText=`padding-left:18px;border-left:3px solid ${gc.hex};margin-bottom:22px`;
+    const ghdr=document.createElement('div'); ghdr.style.cssText='display:flex;align-items:center;gap:8px;margin-bottom:10px';
+    ghdr.innerHTML=`<span style="font-size:16px">${esc(g.icon||'')}</span><span style="font-size:15px;font-weight:700;color:${gc.hex}">${esc(g.name)}</span>`;
+    grp.appendChild(ghdr);
+    (g.features||[]).forEach(f=>{
+      const sc=f.status||'planned', dc={planned:'#d4d0e8',progress:'#6c5ce7',done:'#00a86b'}[sc];
+      const fi=document.createElement('div'); fi.style.cssText='display:flex;align-items:flex-start;gap:9px;padding:3px 0;font-size:13px;color:#6b6880;line-height:1.5';
+      fi.innerHTML=`<svg style="width:16px;height:16px;flex-shrink:0;margin-top:1px;stroke:${dc};fill:none;stroke-width:1.5" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7"/>${sc==='done'?'<polyline points="5,8.5 7,10.5 11,6" stroke-linecap="round" stroke-linejoin="round"/>':sc==='progress'?'<path d="M8 5v3l2 2" stroke-linecap="round"/>':''}</svg><span>${esc(f.text)}</span>`;
+      grp.appendChild(fi);
+    });
+    if(!(g.features?.length)){ const e=document.createElement('div'); e.style.cssText='font-size:12px;color:#a8a5be;font-style:italic'; e.textContent='No features'; grp.appendChild(e); }
+    card.appendChild(grp);
+  });
+  if(!p.groups?.length){ const e=document.createElement('div'); e.style.cssText='font-size:12px;color:#a8a5be;font-style:italic'; e.textContent='No groups'; card.appendChild(e); }
+  return card;
+}
+
+/* ── SEED ── */
+function seed(){
+  S.title='Product Roadmap 2025';
+  S.phases=[
+    {id:uid(),title:'Phase 1: Experience & Core Evolution',period:'Q2–Q3: MAY – SEPTEMBER',focus:'VERSION 7.0.0',icon:'📊',color:'emerald',iconColor:'slate',groups:[
+      {id:uid(),name:'Finance Enhancements',icon:'🏦',color:'emerald',features:[
+        {id:uid(),text:'New Bank Reconciliation Module',status:'done'},
+        {id:uid(),text:'Customer/Vendor Offset Management',status:'done'},
+      ]},
+      {id:uid(),name:'HCMS Upgrades',icon:'👥',color:'violet',features:[
+        {id:uid(),text:'Improved employee self-service',status:'done'},
+        {id:uid(),text:'Enhanced re-hiring & System Audit Trail',status:'done'},
+      ]},
+      {id:uid(),name:'Mobile Experience',icon:'📱',color:'slate',features:[
+        {id:uid(),text:'Redesigned salary slips & vacation dashboards',status:'done'},
+      ]},
+    ]},
+    {id:uid(),title:'Phase 2: Intelligence & Innovation',period:'Q3–Q4: OCTOBER – DECEMBER',focus:'VERSION 7.5.0',icon:'🚀',color:'violet',iconColor:'violet',groups:[
+      {id:uid(),name:'New Bid Management',icon:'📋',color:'violet',features:[
+        {id:uid(),text:'End-to-end tender management system',status:'planned'},
+        {id:uid(),text:'Automated bidding workflows',status:'planned'},
+      ]},
+      {id:uid(),name:'Strengthened BI',icon:'📈',color:'emerald',features:[
+        {id:uid(),text:'Advanced interactive dashboards',status:'planned'},
+        {id:uid(),text:'Enhanced Query Builder tools',status:'planned'},
+      ]},
+      {id:uid(),name:'System Customization',icon:'🎨',color:'coral',features:[
+        {id:uid(),text:'Universal design engine (themes, fonts)',status:'planned'},
+      ]},
+    ]},
   ];
   save();
 }
 
-// ── SPIN KEYFRAME (for export spinner) ───────────────────────────────────
-const styleEl = document.createElement('style');
-styleEl.textContent = '@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}';
-document.head.appendChild(styleEl);
-
-// ── INIT ──────────────────────────────────────────────────────────────────
-(function init() {
-  const loaded = load();
-  if (!loaded || !S.phases || !S.phases.length) seed();
-  document.getElementById('canvas-title-input').value = S.title || '';
+/* ── INIT ── */
+(function(){
+  const ok=load();
+  if(!ok||!S.phases?.length) seed();
+  document.getElementById('canvas-title-input').value=S.title||'';
   renderAll();
-  // stagger card animations
-  setTimeout(() => {
-    document.querySelectorAll('.phase-card-wrap').forEach((el,i) => {
-      el.style.animationDelay = (i * 0.08) + 's';
-    });
-  }, 0);
 })();
 </script>
 </body>
 </html>
-HTMLEOF
-echo "Done. File size: $(wc -c < /mnt/user-data/outputs/roadmap-builder.html) bytes"
